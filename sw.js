@@ -1,7 +1,7 @@
 // Service Worker: بيحفظ ملفات الأبليكشن على الموبايل عشان يشتغل من غير نت.
 // مهم: كل ما تعدّل أي ملف وتنشره، غيّر CACHE_VERSION (v1 → v2) عشان الناس تاخد التحديث.
 
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 
 const FILES = [
   './',
