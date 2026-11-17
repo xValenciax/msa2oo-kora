@@ -3,8 +3,9 @@
 // عشان تضيف لعبة جديدة: اعمل import ليها وضيفها في games.
 
 import password from './games/password/password.js';
+import risk from './games/risk/risk.js';
 
-const games = [password];
+const games = [password, risk];
 
 const root = document.getElementById('app');
 

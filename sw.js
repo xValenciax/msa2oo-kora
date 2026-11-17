@@ -1,7 +1,7 @@
 // Service Worker: بيحفظ ملفات الأبليكشن على الموبايل عشان يشتغل من غير نت.
 // مهم: كل ما تعدّل أي ملف وتنشره، غيّر CACHE_VERSION (v1 → v2) عشان الناس تاخد التحديث.
 
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 
 const FILES = [
   './',
@@ -14,6 +14,8 @@ const FILES = [
   './icons/icon-512.png',
   './games/password/password.js',
   './games/password/players.json',
+  './games/risk/risk.js',
+  './games/risk/questions.json',
 ];
 
 // أول مرة: نحفظ كل الملفات
