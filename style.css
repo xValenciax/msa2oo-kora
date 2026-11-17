@@ -181,3 +181,4 @@ button:disabled { opacity: 0.35; cursor: default; }
 .steal-btn { border-color: var(--danger); }
 .judge { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: auto; }
 .danger-btn { color: var(--danger); border-color: var(--danger); }
+.timer.paused { opacity: 0.4; }

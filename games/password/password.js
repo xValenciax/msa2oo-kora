@@ -1,7 +1,8 @@
 // لعبة باسورد
 //
 // القواعد: تيمين. الحكم معاه الموبايل وبيوري اسم اللاعب لواحد من كل تيم.
-// كل تيم في دوره بيدّي هنت واحد لفرقته وليه 30 ثانية. الوقت يخلص = الدور للتيم التاني.
+// كل تيم في دوره بيدّي هنت واحد لفرقته وليه 30 ثانية. الوقت يخلص = الدور للتيم التاني،
+// والعدّاد بيقف لحد ما الحكم يبدأ الدور الجديد. الحكم كمان يقدر يوقّف الوقت ويكمّله في أي لحظة.
 // لما حد يجيبه صح الحكم يدوس "صح" ويختار النقطة لأنهي تيم.
 //
 // إزاي الكود شغال: كل حاجة في object واحد اسمه state.
@@ -61,7 +62,9 @@ const actions = {
       player: null,
       revealed: false, // الاسم ظاهر في شاشة reveal ولا لأ
       used: [],        // أسامي اتلعبت
-      turnEndsAt: 0,   // الوقت اللي الدور بيخلص فيه (timestamp)
+      turnEndsAt: 0,   // الوقت اللي الدور بيخلص فيه (timestamp) لما العدّاد شغال
+      paused: false,   // العدّاد واقف؟ (الحكم وقفه، أو الدور لسه هيبدأ)
+      remainingMs: 0,  // الوقت الباقي لما العدّاد واقف
       lastScorer: null,
     };
     newPlayer();
@@ -69,7 +72,11 @@ const actions = {
 
   resume() {
     state = previous;
-    if (state.screen === 'turn' && Date.now() > state.turnEndsAt) passTurn();
+    // لو اللعبة اتقفلت والعدّاد شغال، نوقفه على الوقت اللي كان باقي
+    if (state.screen === 'turn' && !state.paused) {
+      if (Date.now() >= state.turnEndsAt) passTurn();
+      else pauseTimer();
+    }
   },
 
   reveal() {
@@ -80,6 +87,16 @@ const actions = {
     state.screen = 'turn';
     state.turn = state.starter;
     state.turnEndsAt = Date.now() + TURN_SECONDS * 1000;
+    state.paused = false;
+  },
+
+  pause() {
+    pauseTimer();
+  },
+
+  play() {
+    state.turnEndsAt = Date.now() + state.remainingMs;
+    state.paused = false;
   },
 
   changePlayer() {
@@ -87,6 +104,7 @@ const actions = {
   },
 
   correct() {
+    if (!state.paused) pauseTimer(); // لو رجع بـ "رجوع" يلاقي الوقت زي ما هو
     state.screen = 'award';
   },
 
@@ -144,14 +162,22 @@ function newPlayer() {
   state.screen = 'reveal';
 }
 
+// الوقت خلص: الدور للتيم التاني، بس العدّاد يفضل واقف لحد ما الحكم يبدأه
 function passTurn() {
   state.turn = 1 - state.turn;
-  state.turnEndsAt = Date.now() + TURN_SECONDS * 1000;
+  state.paused = true;
+  state.remainingMs = TURN_SECONDS * 1000;
   if (navigator.vibrate) navigator.vibrate(300);
 }
 
+function pauseTimer() {
+  state.remainingMs = Math.max(0, state.turnEndsAt - Date.now());
+  state.paused = true;
+}
+
 function secondsLeft() {
-  return Math.ceil((state.turnEndsAt - Date.now()) / 1000);
+  const ms = state.paused ? state.remainingMs : state.turnEndsAt - Date.now();
+  return Math.ceil(ms / 1000);
 }
 
 // بيحدّث رقم العدّاد بس من غير ما يرسم الشاشة كلها
@@ -174,7 +200,7 @@ function startTicker() {
 function render() {
   clearInterval(ticker);
   root.innerHTML = header() + screens[state.screen]();
-  if (state.screen === 'turn') startTicker();
+  if (state.screen === 'turn' && !state.paused) startTicker();
   if (state.screen !== 'setup') save(SAVE_KEY, state);
 }
 
@@ -226,7 +252,10 @@ const screens = {
   turn: () => `
     <main class="screen center">
       <p class="title">دور ${esc(teamName(state.turn))}</p>
-      <p id="timer" class="timer">${Math.max(0, secondsLeft())}</p>
+      <p id="timer" class="timer ${state.paused ? 'paused' : ''}">${Math.max(0, secondsLeft())}</p>
+      ${state.paused
+        ? `<button class="primary" data-action="play">${state.remainingMs === TURN_SECONDS * 1000 ? `ابدأ دور ${esc(teamName(state.turn))}` : 'كمّل الوقت ▶'}</button>`
+        : '<button class="secondary" data-action="pause">وقّف الوقت ⏸</button>'}
       <p class="muted">${esc(state.player)}</p>
       <div class="actions">
         <button class="primary huge" data-action="correct">صح ✓</button>
