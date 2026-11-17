@@ -2,7 +2,7 @@
 //
 // القواعد: تيمين. الحكم معاه الموبايل وبيوري اسم اللاعب لواحد من كل تيم.
 // كل تيم في دوره بيدّي هنت واحد لفرقته وليه 30 ثانية. الوقت يخلص = الدور للتيم التاني،
-// والعدّاد بيقف لحد ما الحكم يبدأ الدور الجديد. الحكم كمان يقدر يوقّف الوقت ويكمّله في أي لحظة.
+// والعدّاد بيقف لحد ما الحكم يبدأ الدور الجديد. الحكم كمان يقدر يوقّف الوقت ويكمّله أو يرجّعه لـ 30 في أي لحظة.
 // لما حد يجيبه صح الحكم يدوس "صح" ويختار النقطة لأنهي تيم.
 //
 // إزاي الكود شغال: كل حاجة في object واحد اسمه state.
@@ -92,6 +92,12 @@ const actions = {
 
   pause() {
     pauseTimer();
+  },
+
+  // يرجّع العدّاد لـ 30 ويوقفه، لحد ما الحكم يبدأ تاني
+  resetTimer() {
+    state.paused = true;
+    state.remainingMs = TURN_SECONDS * 1000;
   },
 
   play() {
@@ -256,6 +262,7 @@ const screens = {
       ${state.paused
         ? `<button class="primary" data-action="play">${state.remainingMs === TURN_SECONDS * 1000 ? `ابدأ دور ${esc(teamName(state.turn))}` : 'كمّل الوقت ▶'}</button>`
         : '<button class="secondary" data-action="pause">وقّف الوقت ⏸</button>'}
+      <button class="link" data-action="resetTimer">رجّع الوقت لـ ${TURN_SECONDS} ↺</button>
       <p class="muted">${esc(state.player)}</p>
       <div class="actions">
         <button class="primary huge" data-action="correct">صح ✓</button>
