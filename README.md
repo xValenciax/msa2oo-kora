@@ -22,7 +22,7 @@ python3 -m http.server 8000
 | `games/password/password.js` | لعبة باسورد كاملة |
 | `games/password/players.json` | أسامي اللاعيبة |
 | `games/risk/risk.js` | لعبة ريسك كاملة |
-| `games/risk/questions.json` | أسئلة ريسك (10 كاتيجوري) |
+| `games/risk/questions.json` | أسئلة ريسك (50 كاتيجوري × 20 سؤال) |
 | `manifest.json` | اسم الأبليكشن وأيقونته لما يتنزل |
 | `sw.js` | بيخلّي الأبليكشن يشتغل أوفلاين |
 
