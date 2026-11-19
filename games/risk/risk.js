@@ -21,8 +21,9 @@ const TURN_SECONDS = 30;
 const EXTRA_SECONDS = 15;
 const POINTS = [5, 10, 20, 40];
 const CATEGORY_COUNT = 4;
-const SAVE_KEY = 'risk';
-const SEEN_KEY = 'risk-seen'; // الأسئلة اللي اتلعبت قبل كده، عشان ما تتكررش
+// الـ v2: لما الأسئلة اتغيّرت كلها، عشان أي لعبة أو تاريخ قديم يتمسح ونبدأ على نضيف
+const SAVE_KEY = 'risk-v2';
+const SEEN_KEY = 'risk-seen-v2'; // الأسئلة اللي اتلعبت قبل كده، عشان ما تتكررش
 
 const CARDS = {
   steal: 'سرقة',
@@ -326,7 +327,7 @@ const screens = {
           <strong>اختار ${CATEGORY_COUNT} كاتيجوري (${state.picked.length}/${CATEGORY_COUNT})</strong>
           <button class="link" data-action="shuffleCategories">عشوائي</button>
         </div>
-        <div class="chips">
+        <div class="chips scroll">
           ${categories.map((c, i) => `
             <button class="chip pick ${state.picked.includes(i) ? 'on' : ''}" data-action="toggleCategory" data-value="${i}">${esc(c.name)}</button>
           `).join('')}
